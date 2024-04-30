@@ -9,7 +9,7 @@ How to Use:
 4. Setting your node Ethreum in app.py and you must have node ethreum on localhost localhost:8545
 5. Setting your supply in TestCoin.sol script,Setting your supply and your Gass price in app.py
 6. [Install Solidity](https://docs.soliditylang.org/en/latest/installing-solidity.html)
-7. Setting Infura Project ID: [Click here for Setting](https://www.infura.io/)
+7. Setting Infura Main Net URL ETH ID: [Click here for Setting](https://www.infura.io/)
 8. Run Web Server: flask run
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------

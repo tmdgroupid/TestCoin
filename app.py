@@ -5,7 +5,7 @@ from solcx import compile_source
 app = Flask(__name__)
 
 # Connect to the Ropsten test network using Infura
-webthree = Web3(HTTPProvider("https://mainnet.infura.io/v3/204b2e25317d4e3c8d59bf61d1830702"))
+webthree = Web3(HTTPProvider("Your Main Net Infura ETH ID URL HTTPS"))
 
 try:
     # Check if the connection to Ethereum is successful

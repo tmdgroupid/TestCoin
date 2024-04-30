@@ -4,12 +4,18 @@ from solcx import compile_source
 
 app = Flask(__name__)
 
-# Connect to the local Ethereum network
-web3 = Web3(Web3.HTTPProvider("http://localhost:8545"))
+# Connect to the Ropsten test network using Infura
+webthree = Web3(HTTPProvider("https://ropsten.infura.io/v3/YOUR_INFURA_PROJECT_ID"))
 
 # Check if the connection to Ethereum is successful
-if web3.eth.defaultAccount:
+if webthree.isConnected():
     print("Connected to Ethereum network!")
+    accounts = webthree.eth.accounts
+    if accounts:
+        default_account = accounts[0]
+        print(f"Default account: {default_account}")
+    else:
+        print("No accounts found.")
 else:
     print("Failed to connect to Ethereum network.")
 
@@ -20,41 +26,29 @@ contract_interface = compiled_sol["<stdin>:TestCoin"]
 abi = contract_interface["abi"]
 bytecode = contract_interface["bin"]
 
-# Deploy the contract
-total_supply = 1000
-contract = web3.eth.contract(abi=abi, bytecode=bytecode)
-tx_hash = contract.constructor(total_supply).transact()
-tx_receipt = web3.eth.wait_for_transaction_receipt(tx_hash)
-contract_address = tx_receipt["contractAddress"]
+# Define a route to deploy the contract
+@app.route("/deploy", methods=["GET"])
+def deploy():
+    # Get the nonce for the default account
+    nonce = webthree.eth.getTransactionCount(default_account)
 
-# Create a new contract instance
-contract = web3.eth.contract(address=contract_address, abi=abi)
+    # Deploy the contract
+    contract = webthree.eth.contract(abi=abi, bytecode=bytecode)
+    tx_hash = contract.constructor(1000).buildTransaction({
+        "from": default_account,
+        "nonce": nonce,
+        "gas": 1000000,
+        "gasPrice": webthree.toWei("10", "gwei")
+    })
+    signed_tx = webthree.eth.account.signTransaction(tx_hash, private_key=YOUR_PRIVATE_KEY)
+    tx_hash = webthree.eth.sendRawTransaction(signed_tx.rawTransaction)
 
-# Define a route to get the total supply
-@app.route("/total_supply")
-def total_supply():
-    total_supply = contract.functions.totalSupply().call()
-    return jsonify({"total_supply": total_supply})
+    # Wait for the transaction to be mined and confirmed
+    tx_receipt = webthree.eth.waitForTransactionReceipt(tx_hash)
+    contract_address = tx_receipt["contractAddress"]
 
-# Define a route to get the balance of an address
-@app.route("/balance/<address>")
-def balance(address):
-    balance = contract.functions.balanceOf(address).call()
-    return jsonify({"balance": balance})
-
-# Define a route to send TestCoins to an address
-@app.route("/send", methods=["POST"])
-def send():
-    from_address = web3.eth.defaultAccount
-    to_address = request.form["to"]
-    value = int(request.form["value"])
-
-    # Send the transaction
-    tx_hash = contract.functions.transfer(to_address, value).transact({"from": from_address})
-    tx_receipt = web3.eth.wait_for_transaction_receipt(tx_hash)
-
-    # Return the transaction hash
-    return jsonify({"tx_hash": tx_hash.hex()})
+    # Return the contract address
+    return jsonify({"contractAddress": contract_address})
 
 if __name__ == "__main__":
     app.run(debug=True)

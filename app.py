@@ -1,11 +1,11 @@
 from flask import Flask, jsonify, request
-from webthree import webthree, HTTPProvider
+from web3 import webthree, HTTPProvider
 from solcx import compile_source
 
 app = Flask(__name__)
 
 # Connect to the local Ethereum network
-webthree = webthree(HTTPProvider("http://localhost:8545"))
+webthree = web3(HTTPProvider("http://localhost:8545"))
 
 # Check if the connection Ethreum is successful
 if webthree.isConnected():

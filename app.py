@@ -1,67 +1,54 @@
 from flask import Flask, jsonify, request
 from web3 import Web3, HTTPProvider
-from solcx import compile_standard
+from solcx import compile_source
 
-app = Flask(_name_)
+app = Flask(__name__)
 
-# Connected Blockchain Node Ethreum Contract
-webthree = Web3(HTTPProvider("http://localhost:8545"))
+# Connect to the local Ethereum network
+web3 = Web3(HTTPProvider("http://localhost:8545"))
 
-# Compile Solidity contract
-contract_source_code = '''
-pragma solidity ^0.8.0;
+# Compile the Solidity contract
+contract_source_code = open("TestCoin.sol", "r").read()
+compiled_sol = compile_source(contract_source_code)
+contract_interface = compiled_sol["<stdin>:TestCoin"]
+abi = contract_interface["abi"]
+bytecode = contract_interface["bin"]
 
-contract TestCoin {
-    string public name = "TestCoin";
-    string public symbol = "TSC";
-    uint256 public totalSupply;
+# Deploy the contract
+total_supply = 1000
+contract = web3.eth.contract(abi=abi, bytecode=bytecode)
+tx_hash = contract.constructor(total_supply).transact()
+tx_receipt = web3.eth.wait_for_transaction_receipt(tx_hash)
+contract_address = tx_receipt["contractAddress"]
 
-    mapping(address => uint256) public balanceOf;
+# Create a new contract instance
+contract = web3.eth.contract(address=contract_address, abi=abi)
 
-    event Transfer(address indexed from, address indexed to, uint256 value);
+# Define a route to get the total supply
+@app.route("/total_supply")
+def total_supply():
+    total_supply = contract.functions.totalSupply().call()
+    return jsonify({"total_supply": total_supply})
 
-    constructor(uint256 initialSupply) {
-        totalSupply = initialSupply;
-        balanceOf[msg.sender] = initialSupply;
-    }
+# Define a route to get the balance of an address
+@app.route("/balance/<address>")
+def balance(address):
+    balance = contract.functions.balanceOf(address).call()
+    return jsonify({"balance": balance})
 
-    function transfer(address _to, uint256 _value) public returns (bool success) {
-        require(balanceOf[msg.sender] >= _value, "Insufficient balance");
-        require(balanceOf[_to] + _value >= balanceOf[_to], "Overflow error");
+# Define a route to send TestCoins to an address
+@app.route("/send", methods=["POST"])
+def send():
+    from_address = web3.eth.defaultAccount
+    to_address = request.form["to"]
+    value = int(request.form["value"])
 
-        balanceOf[msg.sender] -= _value;
-        balanceOf[_to] += _value;
+    # Send the transaction
+    tx_hash = contract.functions.transfer(to_address, value).transact({"from": from_address})
+    tx_receipt = web3.eth.wait_for_transaction_receipt(tx_hash)
 
-        emit Transfer(msg.sender, _to, _value);
-        return true;
-    }
-}
-'''
+    # Return the transaction hash
+    return jsonify({"tx_hash": tx_hash.hex()})
 
-compiled_sol = compile_standard({
-    "language": "Solidity",
-    "sources": {"TestCoin.sol": {"content": contract_source_code}},
-    "settings": {"outputSelection": {"": {"": ["metadata", "evm.bytecode", "evm.sourceMap"]}}}
-})
-
-bytecode = compiled_sol["contracts"]["TestCoin.sol"]["TestCoin"]["evm"]["bytecode"]["object"]
-abi = compiled_sol["contracts"]["TestCoin.sol"]["TestCoin"]["abi"]
-
-# Deploy contract to Ethereum blockchain
-contract = webthree.eth.contract(abi=abi, bytecode=bytecode)
-
-# Deploy contract function
-def deploy_contract(initial_supply):
-    tx_hash = contract.constructor(initial_supply).transact()
-    tx_receipt = webthree.eth.wait_for_transaction_receipt(tx_hash)
-    contract_address = tx_receipt.contractAddress
-    return contract_address
-
-@app.route('/deploy', methods=['POST'])
-def deploy():
-    initial_supply = int(request.json['initialSupply'])
-    contract_address = deploy_contract(initial_supply)
-    return jsonify({"contractAddress": contract_address})
-
-if _name_ == '_main_':
+if __name__ == "__main__":
     app.run(debug=True)

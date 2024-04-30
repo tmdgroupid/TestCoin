@@ -1,29 +1,29 @@
 pragma solidity ^0.8.0;
 
-contract TestCoin {
+// Import the OpenZeppelin library for secure contract development
+import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/token/ERC20/ERC20.sol";
+
+// Inherit from the OpenZeppelin ERC20 contract
+contract TestCoin is ERC20 {
     string public name = "TestCoin";
     string public symbol = "TSC";
     uint256 public totalSupply;
 
-    mapping(address => uint256) public balanceOf;
-
-    event Transfer(address indexed from, address indexed to, uint256 value);
-
-    constructor(uint256 initialSupply) {
-        totalSupply = initialSupply;
-        balanceOf[msg.sender] = initialSupply;
+    // Override the constructor to set the initial supply
+    constructor() ERC20("TestCoin", "TSC") {
+        totalSupply = 1000 * (10 ** uint256(decimals()));
+        _mint(msg.sender, totalSupply);
     }
 
-    function transfer(address _to, uint256 _value) public returns (bool success) {
-        require(balanceOf[msg.sender] >= _value, "Insufficient balance");
-        balanceOf[msg.sender] -= _value;
-        balanceOf[_to] += _value;
+    // Override the transfer function to emit the Transfer event
+    function transfer(address _to, uint256 _value) public override returns (bool success) {
+        super.transfer(_to, _value);
         emit Transfer(msg.sender, _to, _value);
         return true;
     }
 
     // Optional: Function to check the balance of an address
-    function getBalance(address _address) public view returns (uint256 balance) {
-        return balanceOf[_address];
+    function getBalance(address _address) public view override returns (uint256 balance) {
+        return balanceOf(_address);
     }
 }

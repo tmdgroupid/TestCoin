@@ -1,3 +1,18 @@
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+# Files
+.DS_Store
+npm-debug.log
+package-lock.json
+
+# Folders
+.idea/
+node_modules
+
+>>>>>>> aeb6265 (First My Training Dev Blockchain)
+>>>>>>> e47cc09 (First Dev Blockchain)
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -158,3 +173,12 @@ cython_debug/
 #  and can be added to the global gitignore or merged into this file.  For a more nuclear
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+
+
+
+>>>>>>> aeb6265 (First My Training Dev Blockchain)
+>>>>>>> e47cc09 (First Dev Blockchain)

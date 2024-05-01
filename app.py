@@ -13,7 +13,7 @@ except Exception as e:
     exit()
 
 # Connect to the Ethereum mainnet using Infura
-infura_url = "https://mainnet.infura.io/v3/204b2e25317d4e3c8d59bf61d1830702"  # Ganti YOUR_API_KEY dengan kunci API Infura Anda
+infura_url = "https://mainnet.infura.io/v3/YOUR_API_KEY"  # Ganti YOUR_API_KEY dengan kunci API Infura Anda
 web3 = Web3(HTTPProvider(infura_url))
 
 try:

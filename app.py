@@ -4,8 +4,16 @@ from solcx import compile_source, install_solc
 
 app = Flask(__name__)
 
+try:
+    # Install Solidity Compiler (solc) if not installed
+    install_solc()
+    print("Solidity compiler (solc) installed successfully.")
+except Exception as e:
+    print(f"Failed to install Solidity compiler (solc): {e}")
+    exit()
+
 # Connect to the Ethereum mainnet using Infura
-infura_url = "https://mainnet.infura.io/v3/YOUR_API_KEY"  # Ganti YOUR_API_KEY dengan kunci API Infura Anda
+infura_url = "https://mainnet.infura.io/v3/204b2e25317d4e3c8d59bf61d1830702"  # Ganti YOUR_API_KEY dengan kunci API Infura Anda
 web3 = Web3(HTTPProvider(infura_url))
 
 try:
@@ -20,13 +28,7 @@ try:
         print("No accounts found.")
 except Exception as e:
     print(f"Failed to connect to Ethereum network: {e}")
-
-# Install Solidity Compiler (solc) if not installed
-try:
-    install_solc()
-    print("Solidity compiler (solc) installed successfully.")
-except Exception as e:
-    print(f"Failed to install Solidity compiler (solc): {e}")
+    exit()
 
 # Compile the Solidity contract
 contract_source_code = open("RetailCoin.sol", "r").read()

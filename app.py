@@ -1,9 +1,11 @@
 from flask import Flask, jsonify, request
 from web3 import Web3, HTTPProvider
 from solcx import compile_source, install_solc, get_installable_solc_versions
+import solcx
 
 app = Flask(__name__)
 
+solcx.install_solc('0.8.7')
 try:
     # Install Solidity Compiler (solc) if not installed
     install_solc()

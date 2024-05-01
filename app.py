@@ -1,19 +1,23 @@
 from flask import Flask, jsonify, request
 from web3 import Web3, HTTPProvider
-from solcx import compile_source, install_solc
+from solcx import compile_source, install_solc, get_installable_solc_versions
 
 app = Flask(__name__)
 
+# Install Solidity Compiler (solc) if not installed
 try:
-    # Install Solidity Compiler (solc) if not installed
     install_solc()
     print("Solidity compiler (solc) installed successfully.")
 except Exception as e:
     print(f"Failed to install Solidity compiler (solc): {e}")
+
+    # Try to get installable solc versions
+    print("Available solc versions:", get_installable_solc_versions())
+
     exit()
 
 # Connect to the Ethereum mainnet using Infura
-infura_url = "https://mainnet.infura.io/v3/YOUR_API_KEY"  # Ganti YOUR_API_KEY dengan kunci API Infura Anda
+infura_url = "https://mainnet.infura.io/v3/YOUR_API_KEY2"  # Ganti YOUR_API_KEY dengan kunci API Infura Anda
 web3 = Web3(HTTPProvider(infura_url))
 
 try:
@@ -31,7 +35,7 @@ except Exception as e:
     exit()
 
 # Compile the Solidity contract
-contract_source_code = open("RetailCoin.sol", "r").read()
+contract_source_code = open("TestCoin.sol", "r").read()
 compiled_sol = compile_source(contract_source_code)
 contract_interface = compiled_sol["<stdin>:TestCoin"]
 abi = contract_interface["abi"]

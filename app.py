@@ -1,6 +1,7 @@
-from flask import Flask, jsonify, request
-from web3 import Web3, HTTPProvider
-import solcx
+from flask import Flask, render_template
+from web3 import Web3
+from solcx import compile_source
+import json
 
 app = Flask(__name__)
 
@@ -10,62 +11,47 @@ print("Solidity compiler (solc) installed successfully.")
 
 # Connect to the Ethereum mainnet using Infura
 infura_url = "https://mainnet.infura.io/v3/204b2e25317d4e3c8d59bf61d1830702"  # Replace with your Infura API key
-web3 = Web3(HTTPProvider(infura_url))
 
-try:
-    # Check if the connection to Ethereum is successful
-    network_version = web3.net.version
-    print(f"Connected to Ethereum network with Version: {network_version}")
-    accounts = web3.eth.accounts
-    if accounts:
-        default_account = accounts[0]
-        print(f"Default account: {default_account}")
-    else:
-        print("No accounts found.")
-except Exception as e:
-    print(f"Failed to connect to Ethereum network: {e}")
-    exit()
+# Account's private key
+private_key = "YOUR_PRIVATE_KEY"
 
-# Compile the Solidity contract
-contract_source_code = open("RetailCoin.sol", "r").read()
-compiled_sol = solcx.compile_source(contract_source_code, solc_version='0.8.7')
-contract_interface = compiled_sol['<stdin>:RetailCoin']
-abi = contract_interface['abi']
-bytecode = contract_interface['bin']
+# Compile Solidity source code
+with open("./RetailCoin.sol", "r") as file:
+    source_code = file.read()
 
-# Define a route to deploy the contract
-@app.route("/deploy", methods=["GET"])
-def deploy():
-    # Get the nonce for the default account
-    nonce = web3.eth.getTransactionCount(default_account)
+compiled_code = compile_source(source_code)
+contract_interface = compiled_code["<stdin>:RetailCoin"]
 
-    # Deploy the contract
-    contract = web3.eth.contract(abi=abi, bytecode=bytecode)
-    tx_hash = contract.constructor(1000).buildTransaction({
-        "from": default_account,
-        "nonce": nonce,
-        "gas": 1000000,
-        "gasPrice": web3.toWei("10", "gwei")
-    })
+# Connect to the Ethereum network
+w3 = Web3(Web3.HTTPProvider(infura_url))
 
-    # Sign the transaction with MetaMask and Infura
-    # This part needs to be done manually by the user using MetaMask
-    # and then submitted through a separate application
-    # as Flask cannot interact directly with MetaMask
-    # You will need to provide instructions for users to interact with MetaMask
-    # and submit the signed transaction to this endpoint
-    # For demonstration purposes, I'll leave this part as a placeholder
-    # and you need to replace it with the actual implementation.
-    signed_tx = "SIGNED_TRANSACTION_FROM_METAMASK"
+# Set default account
+w3.eth.defaultAccount = w3.eth.account.privateKeyToAccount(private_key).address
 
-    tx_hash = web3.eth.sendRawTransaction(signed_tx)
+# Deploy the contract
+RetailCoin = w3.eth.contract(
+    abi=contract_interface["abi"],
+    bytecode=contract_interface["bin"]
+)
+tx_hash = RetailCoin.constructor().transact()
+tx_receipt = w3.eth.waitForTransactionReceipt(tx_hash)
 
-    # Wait for the transaction to be mined and confirmed
-    tx_receipt = web3.eth.waitForTransactionReceipt(tx_hash)
-    contract_address = tx_receipt["contractAddress"]
+contract_address = tx_receipt.contractAddress
 
-    # Return the contract address
-    return jsonify({"contractAddress": contract_address})
+# Interact with the contract
+contract_instance = w3.eth.contract(
+    address=contract_address,
+    abi=contract_interface["abi"]
+)
+
+@app.route("/")
+def index():
+    return render_template("index.html")
+
+@app.route("/totalSupply")
+def total_supply():
+    total_supply = contract_instance.functions.totalSupply().call()
+    return f"Total Supply: {total_supply}"
 
 if __name__ == "__main__":
     app.run(debug=True)

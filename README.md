@@ -12,6 +12,14 @@ How to Use:
 7. Setting Infura Main Net URL ETH ID: [Click here for Setting](https://www.infura.io/)
 8. Install Open Zeppelin:npm install @openzeppelin/contracts@latest and npm install @openzeppelin/contracts
 9. Run Web Server: flask run
+10. Setting Private Key Account MetaMask: Here are the steps to export your private key from MetaMask:
+
+1. Open MetaMask: Ensure you are connected to MetaMask in your browser.
+2. Open Settings Menu: Click on the MetaMask icon in your browser to open the MetaMask menu, then click the three-dot icon in the top right corner and select "Settings".
+3. Select Security & Privacy: In the Settings menu, choose the "Security & Privacy" option.
+4. Export Private Key: Scroll down until you see the "Export Private Key" option. Click on that option.
+5. Verify Your Identity: MetaMask will prompt you to enter your MetaMask password to verify your identity.
+6. Display Private Key: After entering your password correctly, MetaMask will display your private key. Typically, this is presented in the form of a long sequence of numbers and letters. Be sure to copy it carefully and store it in a secure location.
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 

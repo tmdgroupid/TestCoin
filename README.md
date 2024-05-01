@@ -10,7 +10,8 @@ How to Use:
 5. Setting your supply in TestCoin.sol script,Setting your supply and your Gass price in app.py
 6. [Install Solidity](https://docs.soliditylang.org/en/latest/installing-solidity.html)
 7. Setting Infura Main Net URL ETH ID: [Click here for Setting](https://www.infura.io/)
-8. Run Web Server: flask run
+8. Install Open Zeppelin:npm install @openzeppelin/contracts
+9. Run Web Server: flask run
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 

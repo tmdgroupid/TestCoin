@@ -12,15 +12,15 @@ print("Solidity compiler (solc) installed successfully.")
 # Connect to the Ethereum mainnet using Infura
 infura_url = "https://mainnet.infura.io/v3/204b2e25317d4e3c8d59bf61d1830702"  # Replace with your Infura API key
 
-# Account's private key
-private_key = "YOUR_PRIVATE_KEY"
+# Account's private key MetaMask
+private_key = "f10d9f7ff5a88325c8a8b8793cdd2523f90002f9d5a1f5cfd38f0268f66efb70"
 
 # Compile Solidity source code
 with open("./TestCoin.sol", "r") as file:
     source_code = file.read()
 
 compiled_code = compile_source(source_code)
-contract_interface = compiled_code["<stdin>:RetailCoin"]
+contract_interface = compiled_code["<stdin>:TestCoin"]
 
 # Connect to the Ethereum network
 w3 = Web3(Web3.HTTPProvider(infura_url))

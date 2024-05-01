@@ -4,8 +4,8 @@ from solcx import compile_source, install_solc, get_installable_solc_versions
 
 app = Flask(__name__)
 
-# Install Solidity Compiler (solc) if not installed
 try:
+    # Install Solidity Compiler (solc) if not installed
     install_solc()
     print("Solidity compiler (solc) installed successfully.")
 except Exception as e:
@@ -17,7 +17,7 @@ except Exception as e:
     exit()
 
 # Connect to the Ethereum mainnet using Infura
-infura_url = "https://mainnet.infura.io/v3/YOUR_API_KEY2"  # Ganti YOUR_API_KEY dengan kunci API Infura Anda
+infura_url = "https://mainnet.infura.io/v3/YOUR_API_KEY"  # Ganti YOUR_API_KEY dengan kunci API Infura Anda
 web3 = Web3(HTTPProvider(infura_url))
 
 try:

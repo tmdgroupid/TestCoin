@@ -16,7 +16,7 @@ infura_url = "https://mainnet.infura.io/v3/204b2e25317d4e3c8d59bf61d1830702"  # 
 private_key = "YOUR_PRIVATE_KEY"
 
 # Compile Solidity source code
-with open("./RetailCoin.sol", "r") as file:
+with open("./TestCoin.sol", "r") as file:
     source_code = file.read()
 
 compiled_code = compile_source(source_code)

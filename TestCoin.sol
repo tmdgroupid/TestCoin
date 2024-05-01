@@ -1,7 +1,7 @@
 pragma solidity ^0.8.0;
 
-// Import the OpenZeppelin library for secure contract development
-import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/token/ERC20/ERC20.sol";
+// Import the OpenZeppelin ERC20 contract
+import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
 // Inherit from the OpenZeppelin ERC20 contract
 contract TestCoin is ERC20 {
@@ -10,7 +10,7 @@ contract TestCoin is ERC20 {
     uint256 public totalSupply;
 
     // Override the constructor to set the initial supply
-    constructor() ERC20("TestCoin", "TSC") {
+    constructor() ERC20("RetailCoin", "TSC") {
         totalSupply = 1000 * (10 ** uint256(decimals()));
         _mint(msg.sender, totalSupply);
     }

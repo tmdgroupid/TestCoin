@@ -6,8 +6,11 @@ import json
 app = Flask(__name__)
 
 # Install Solidity compiler
-install_solc("0.8.0")
-print("Install Solidity Compiler Successfull")
+try:
+    install_solc("0.8.0")
+    print("Solidity Compiler installed successfully.")
+except Exception as e:
+    print(f"Error installing Solidity Compiler: {e}")
 
 # Connect to the Ethereum mainnet using Infura
 infura_url = "https://mainnet.infura.io/v3/204b2e25317d4e3c8d59bf61d1830702"  # Replace with your Infura API key
